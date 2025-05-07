@@ -29,21 +29,33 @@
 ## 📂 Project Structure
 
 CodeCraft/
+
 ├── backend/
 
 │ ├── app.py
 
 │ ├── requirements.txt
+
 │ └── docker/
+
 │ ├── python_executor/
+
 │ │ └── Dockerfile
+
 │ ├── cpp_executor/
+
 │ │ └── Dockerfile
+
 │ └── java_executor/
+
 │ └── Dockerfile
+
 ├── index.html
+
 ├── style.css
+
 └── script.js
+
 └── README.md
 
 
@@ -62,8 +74,9 @@ docker build -t python-runner ./docker/python_executor
 docker build -t cpp-runner ./docker/cpp_executor
 docker build -t java-runner ./docker/java_executor
 
+```
 
-cd frontend
+
 # Open index.html in a browser OR deploy to Vercel
 🌍 Live Demo
 
