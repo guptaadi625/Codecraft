@@ -57,7 +57,7 @@ function runCode() {
     const language = languageDropdown.value;
     const code = editor.getValue();
 
-    fetch('http://127.0.0.1:5000/compile', {
+    fetch('https://codecraft-n39m.onrender.com', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ language, code })
