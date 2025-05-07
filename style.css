@@ -1,0 +1,109 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+}
+
+.container {
+    width: 90%;
+    max-width: 900px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+select, button {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: none;
+}
+
+button {
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+.CodeMirror {
+    height: 300px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+#output {
+    margin-top: 20px;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #222;
+}
+body.dark-mode {
+    background: #121212;
+    color: #e4e4e4;
+}
+
+body.dark-mode .container {
+    background: #1e1e1e;
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.05);
+}
+
+body.dark-mode button {
+    background: #333;
+    color: #eee;
+}
+
+body.dark-mode button:hover {
+    background: #555;
+}
+
+body.dark-mode select {
+    background: #2e2e2e;
+    color: #eee;
+}
+
+body.dark-mode #output {
+    background: #252525;
+    color: #f1f1f1;
+}
+
+/* Optional CodeMirror tweaks (theme handled separately) */
+body.dark-mode .CodeMirror {
+    background: #1e1e1e;
+    color: #f8f8f2;
+}
+body.dark-mode #output {
+    background: #252525;
+    color: #f1f1f1;
+    border: 1px solid #444;
+
+}
+
+body.dark-mode pre {
+    color: #f1f1f1;
+}

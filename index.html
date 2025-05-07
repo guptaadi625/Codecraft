@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>CodeIO - Online Compiler</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/theme/dracula.min.css" />
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 CodeIO </h1>
+
+        <div class="controls">
+            <button id="theme-toggle">🌙 Dark Mode</button>
+            <select id="language">
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+                <option value="java">Java</option>
+            </select>
+            <button id="run-btn">▶ Run Code</button>
+        </div>
+
+        <textarea id="code" name="code"></textarea>
+
+        <div id="output">
+            <h3>🔍 Output</h3>
+            <pre id="result">Your output will appear here...</pre>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.14/mode/clike/clike.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
