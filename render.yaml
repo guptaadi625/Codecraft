@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: codecraft-backend
+    env: python
+    region: oregon
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python app.py"
+    plan: free
+    branch: main
+    rootDir: backend
+    autoDeploy: true
