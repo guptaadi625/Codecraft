@@ -57,7 +57,7 @@ function runCode() {
     const language = languageDropdown.value;
     const code = editor.getValue();
 
-    fetch('https://codecraft-backend-9nl5.onrender.com', {
+    fetch('https://codecraft-backend-9nl5.onrender.com/compile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ language, code })
