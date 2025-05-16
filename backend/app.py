@@ -5,7 +5,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app)  # Allow frontend requests (CORS)
+CORS(app)  # Allow frontend calls
 
 @app.route('/')
 def home():
@@ -19,93 +19,96 @@ def compile_code():
 
     try:
         if language == 'python':
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".py") as temp:
-                temp.write(code.encode('utf-8'))
-                temp.flush()
-
-                result = subprocess.run(
-                    [
-                        'docker', 'run', '--rm',
-                        '-v', f"{temp.name}:/app/run_code.py:ro",
-                        '--network', 'none',
-                        '--memory', '100m',
-                        '--cpus', '0.5',
-                        'python-runner'
-                    ],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    timeout=5
-                )
-
-            os.unlink(temp.name)
-
+            return run_python(code)
         elif language == 'cpp':
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".cpp") as temp:
-                temp.write(code.encode('utf-8'))
-                temp.flush()
-
-                result = subprocess.run(
-                    [
-                        'docker', 'run', '--rm',
-                        '-v', f"{temp.name}:/app/main.cpp:ro",
-                        '--network', 'none',
-                        '--memory', '200m',
-                        '--cpus', '0.5',
-                        'cpp-runner'
-                    ],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    timeout=5
-                )
-
-            os.unlink(temp.name)
-
+            return run_cpp(code)
         elif language == 'java':
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".java") as temp:
-                temp.write(code.encode('utf-8'))
-                temp.flush()
-
-                result = subprocess.run(
-                    [
-                        'docker', 'run', '--rm',
-                        '-v', f"{temp.name}:/app/Main.java:ro",
-                        '--network', 'none',
-                        '--memory', '200m',
-                        '--cpus', '0.5',
-                        'java-runner'
-                    ],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    text=True,
-                    timeout=5
-                )
-
-            os.unlink(temp.name)
-
+            return run_java(code)
         else:
-            return jsonify({
-                'language': language,
-                'output': 'Unsupported language.'
-            })
-
-        return jsonify({
-            'language': language,
-            'output': result.stdout if result.returncode == 0 else result.stderr
-        })
-
-    except subprocess.TimeoutExpired:
-        return jsonify({
-            'language': language,
-            'output': 'Error: Code execution timed out.'
-        })
-
+            return jsonify({'output': 'Unsupported language'}), 400
     except Exception as e:
-        return jsonify({
-            'language': language,
-            'output': f'Error: {str(e)}'
-        })
+        return jsonify({'output': f'Error: {str(e)}'}), 500
+
+# -------------------------------
+# Execution Functions (no Docker)
+# -------------------------------
+
+def run_python(code):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".py") as temp:
+        temp.write(code.encode())
+        temp.flush()
+
+        result = subprocess.run(
+            ['python3', temp.name],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=5,
+            text=True
+        )
+
+    os.unlink(temp.name)
+    return jsonify({'output': result.stdout if result.returncode == 0 else result.stderr})
+
+def run_cpp(code):
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".cpp") as source:
+        source.write(code.encode())
+        source.flush()
+
+        output_file = source.name + ".out"
+
+        compile_result = subprocess.run(
+            ['g++', source.name, '-o', output_file],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        if compile_result.returncode != 0:
+            os.unlink(source.name)
+            return jsonify({'output': compile_result.stderr})
+
+        run_result = subprocess.run(
+            [output_file],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=5,
+            text=True
+        )
+
+        os.unlink(source.name)
+        os.unlink(output_file)
+
+        return jsonify({'output': run_result.stdout if run_result.returncode == 0 else run_result.stderr})
+
+def run_java(code):
+    with tempfile.TemporaryDirectory() as temp_dir:
+        source_path = os.path.join(temp_dir, "Main.java")
+        with open(source_path, "w") as f:
+            f.write(code)
+
+        compile_result = subprocess.run(
+            ['javac', source_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        if compile_result.returncode != 0:
+            return jsonify({'output': compile_result.stderr})
+
+        run_result = subprocess.run(
+            ['java', '-cp', temp_dir, 'Main'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=5,
+            text=True
+        )
+
+        return jsonify({'output': run_result.stdout if run_result.returncode == 0 else run_result.stderr})
+
+# -----------------------------
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=10000, debug=True)
+    import os
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host='0.0.0.0', port=port, debug=True)
